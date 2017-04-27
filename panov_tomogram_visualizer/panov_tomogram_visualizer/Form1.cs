@@ -7,12 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace panov_tomogram_visualizer
 {
-    partial class Form1 : Form
+    public partial class Form1 : Form
     {
-        public Bin b = new Bin();
+        Bin b = new Bin();
         public Form1()
         {
             InitializeComponent();
