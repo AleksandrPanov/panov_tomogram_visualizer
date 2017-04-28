@@ -17,6 +17,7 @@ namespace panov_tomogram_visualizer
         Bin bin;
         View view;
         bool isLoaded = false;
+        bool needReload = false;
         int curLayer = 0;
         int FrameCount;
         DateTime NextFPSUpdate = DateTime.Now.AddSeconds(1);
@@ -56,7 +57,13 @@ namespace panov_tomogram_visualizer
         {
             if (isLoaded)
             {
-                view.DrawQuads(curLayer);
+                //view.DrawQuads(curLayer);
+                if (needReload)
+                {
+                    view.generateTextureImage(curLayer);
+                    view.Load2DTexture();
+                    needReload = false;
+                }
                 glControl1.SwapBuffers();
             }
         }
@@ -64,6 +71,7 @@ namespace panov_tomogram_visualizer
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             curLayer = trackBar1.Value;
+            needReload = true;
         }
 
         void Application_Idle(object sender, EventArgs e)
@@ -77,7 +85,7 @@ namespace panov_tomogram_visualizer
 
        void glControl1_Load(object sender, EventArgs e)
         {
-            
+               
         }
 
         private void Form1_Load(object sender, EventArgs e)
