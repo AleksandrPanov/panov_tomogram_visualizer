@@ -10,9 +10,11 @@ using System.Drawing.Imaging;
 
 namespace panov_tomogram_visualizer
 {
-    class View
+    class View 
     {
         int VBOtexture;
+        public int min = 0;
+        public int width = 2000;
         Bitmap textureImage;
         public void Load2DTexture()
         {
@@ -123,8 +125,7 @@ namespace panov_tomogram_visualizer
         }
         public Color TransferFunction(short value)
         {
-            int min = 0;
-            int max = 2000;
+            int max = min + width;
             int newVal = clamp((value - min) * 255 / (max - min), 0, 255);
             return Color.FromArgb(255, newVal, newVal, newVal);
         }     
