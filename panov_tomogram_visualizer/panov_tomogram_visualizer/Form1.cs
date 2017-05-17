@@ -16,11 +16,15 @@ namespace panov_tomogram_visualizer
     {
         Bin bin;
         View view;
+        Cube cube;
         bool isLoaded = false;
         bool needReload = false;
         bool quads = true;
+        bool isCube = false;
         int curLayer = 0;
         int FrameCount;
+        int xRot = 0;
+        int yRot = 0;
         DateTime NextFPSUpdate = DateTime.Now.AddSeconds(1);
         void displayFPS()
         {
@@ -37,7 +41,7 @@ namespace panov_tomogram_visualizer
             InitializeComponent();
             bin = new Bin();
             view = new View();
-            //bin.readBIN("E:\\projects\\panov_tomogram_visualizer\\testdata.bin");
+            cube = new Cube();
         }
 
         private void открытьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -60,6 +64,14 @@ namespace panov_tomogram_visualizer
             {
                 if (quads)
                     view.DrawQuads(curLayer);               
+                else if (isCube)
+                {
+                    GL.Rotate(yRot, 0.0, 1.0, 0.0);
+                    GL.Rotate(xRot, 1.0, 0.0, 0.0);
+                    cube.DrawCube();                  
+                   // yRot = 0;
+                  //  xRot = 0;
+                }
                 else
                 { 
                     if (needReload)
@@ -107,6 +119,7 @@ namespace panov_tomogram_visualizer
         private void текстуройToolStripMenuItem_Click(object sender, EventArgs e)
         {
             quads = false;
+            needReload = true;
         }
 
         private void trackBar2_Scroll(object sender, EventArgs e)
@@ -119,6 +132,25 @@ namespace panov_tomogram_visualizer
         {
             needReload = true;
             view.width = trackBar3.Value;
+        }
+
+        private void нарисоватьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isCube = true;
+            quads = false;
+            needReload = false;
+        }
+
+        private void скрытьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isCube = false;
+            quads = true;
+            needReload = false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            xRot = (xRot + 45) % 360;
         }
     }
 }

@@ -51,7 +51,6 @@ namespace panov_tomogram_visualizer
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Begin(BeginMode.Quads);
-
             for (int x = 0; x < Bin.X - 1; x++)
                 for(int y = 0; y < Bin.Y - 1; y++)
                 {
