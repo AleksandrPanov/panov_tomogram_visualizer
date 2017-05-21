@@ -19,7 +19,8 @@ namespace panov_tomogram_visualizer
         Cube cube;
         bool isLoaded = false;
         bool needReload = false;
-        bool quads = true;
+        bool quads = false;
+        bool isTexCube = false;
         bool isCube = false;
         int curLayer = 0;
         int FrameCount;
@@ -51,7 +52,11 @@ namespace panov_tomogram_visualizer
             {
                 string s = d.FileName;
                 bin.readBIN(s);
-                view.SetupView(glControl1.Width, glControl1.Height);
+
+                isTexCube = true;
+                f();
+
+               // view.SetupView(glControl1.Width, glControl1.Height);
                 isLoaded = true;
                 glControl1.Invalidate();
                 trackBar1.Maximum = Bin.Z - 1;
@@ -60,19 +65,27 @@ namespace panov_tomogram_visualizer
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            if (isLoaded)
-            {
-                if (quads)
+            if (!isLoaded)
+                return;
+
+            if (quads)
                     view.DrawQuads(curLayer);               
-                else if (isCube)
+            else if (isCube || isTexCube)
                 {
+
                     GL.Rotate(yRot, 0.0, 1.0, 0.0);
                     GL.Rotate(xRot, 1.0, 0.0, 0.0);
-                    cube.DrawCube();                  
-                   // yRot = 0;
-                  //  xRot = 0;
+                    if (isCube)
+                        cube.DrawCube();
+                    if (isTexCube)
+                    {
+                        cube.DrawTexturesCube();
+                        //isTexCube = false;
+                    }                  
+                    yRot = 0;
+                    xRot = 0;
                 }
-                else
+            else
                 { 
                     if (needReload)
                     {
@@ -82,8 +95,7 @@ namespace panov_tomogram_visualizer
                     }
                     view.DrawTexture();
                 }
-                glControl1.SwapBuffers();
-            }
+             glControl1.SwapBuffers();            
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -136,6 +148,13 @@ namespace panov_tomogram_visualizer
 
         private void нарисоватьToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            GL.Enable(EnableCap.DepthTest);
+            GL.ShadeModel(ShadingModel.Smooth);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, Bin.X, 0, Bin.Y, -250, 250);
+            GL.Viewport(0, 0, glControl1.Width, glControl1.Height);
+
             isCube = true;
             quads = false;
             needReload = false;
@@ -143,6 +162,11 @@ namespace panov_tomogram_visualizer
 
         private void скрытьToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            GL.ShadeModel(ShadingModel.Smooth);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, Bin.X, 0, Bin.Y, -1, 1);
+            GL.Viewport(0, 0, glControl1.Width, glControl1.Height);
             isCube = false;
             quads = true;
             needReload = false;
@@ -150,7 +174,51 @@ namespace panov_tomogram_visualizer
 
         private void button1_Click(object sender, EventArgs e)
         {
-            xRot = (xRot + 45) % 360;
+            xRot = (xRot + 10) % 360;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            yRot = (yRot + 10) % 360;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {            
+            yRot = (yRot - 10) % 360;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            xRot = (xRot - 10) % 360;
+        }
+
+        private void нарисоватьВторымСпособомToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            f();
+        }
+        private void f()
+        {
+            cube.GenerateFaceCube();
+            cube.LoadTex();
+            quads = false;
+            isTexCube = true;
+            needReload = false;
+            GL.ClearColor(Color.Beige);
+            GL.Enable(EnableCap.DepthTest);
+
+            Matrix4 p = Matrix4.CreatePerspectiveFieldOfView((float)(90 * Math.PI / 180), 1, 20, 500);
+            // 90 - угол обзора
+            // 1 - отношение длины к высоте
+            // 20 - расстояние до первой грани
+            // 500 - расстояние до дальней грани
+
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref p);
+
+            Matrix4 modelview = Matrix4.LookAt(150, 50, 150, 100, 50, 0, 0, 1, 0);
+            //камера в точке (30, 70, 80), направление взгляда в центр системы координат(0, 0, 0)
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref modelview);
         }
     }
 }
