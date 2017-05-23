@@ -17,6 +17,7 @@ namespace panov_tomogram_visualizer
         Bin bin;
         View view;
         Cube cube;
+        bool start = false;
         bool isLoaded = false;
         bool needReload = false;
         bool quads = false;
@@ -51,12 +52,9 @@ namespace panov_tomogram_visualizer
             if (d.ShowDialog() == DialogResult.OK)
             {
                 string s = d.FileName;
-                bin.readBIN(s);
+                bin.readBIN(s);            
 
-                isTexCube = true;
-                f();
-
-               // view.SetupView(glControl1.Width, glControl1.Height);
+               //view.SetupView(glControl1.Width, glControl1.Height);
                 isLoaded = true;
                 glControl1.Invalidate();
                 trackBar1.Maximum = Bin.Z - 1;
@@ -65,9 +63,8 @@ namespace panov_tomogram_visualizer
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            if (!isLoaded)
+            if (!isLoaded || !start)
                 return;
-
             if (quads)
                     view.DrawQuads(curLayer);               
             else if (isCube || isTexCube)
@@ -125,11 +122,21 @@ namespace panov_tomogram_visualizer
 
         private void четырёхугольникамиToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!start)
+            {
+                view.SetupView(glControl1.Width, glControl1.Height);
+                start = true;
+            }
             quads = true;
         }
 
         private void текстуройToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!start)
+            {
+                view.SetupView(glControl1.Width, glControl1.Height);
+                start = true;
+            }
             quads = false;
             needReload = true;
         }
@@ -194,7 +201,23 @@ namespace panov_tomogram_visualizer
 
         private void нарисоватьВторымСпособомToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            f();
+            if (!start && isLoaded)
+            {
+                button1.Visible = true;
+                button2.Visible = true;
+                button3.Visible = true;
+                button4.Visible = true;
+
+                trackBar1.Visible = false;
+                trackBar2.Visible = false;
+                trackBar3.Visible = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                isTexCube = true;
+                start = true;
+                f();
+            }
         }
         private void f()
         {
@@ -215,8 +238,9 @@ namespace panov_tomogram_visualizer
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref p);
 
-            Matrix4 modelview = Matrix4.LookAt(150, 50, 150, 100, 50, 0, 0, 1, 0);
-            //камера в точке (30, 70, 80), направление взгляда в центр системы координат(0, 0, 0)
+            Matrix4 modelview = Matrix4.LookAt(150, 80, 200, 70, 50, 0, 0, 1, 0);
+            //Matrix4 modelview = Matrix4.LookAt(150, 50, 150, 100, 50, 0, 0, 1, 0);
+            //камера в точке (150, 50, 150), направление взгляда (100, 50, 0)
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref modelview);
         }

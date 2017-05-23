@@ -80,15 +80,15 @@ namespace panov_tomogram_visualizer
                 cubeIndexArray[1,2] = 5;
                 cubeIndexArray[1,3] = 4;
 
-                cubeIndexArray[2,0] = 7;
-                cubeIndexArray[2,1] = 4;
-                cubeIndexArray[2,2] = 5;
-                cubeIndexArray[2,3] = 6;
+                cubeIndexArray[2,0] = 4;
+                cubeIndexArray[2,1] = 7;
+                cubeIndexArray[2,2] = 6;
+                cubeIndexArray[2,3] = 5;
 
-                cubeIndexArray[3,0] = 3;
-                cubeIndexArray[3,1] = 7;
-                cubeIndexArray[3,2] = 6;
-                cubeIndexArray[3,3] = 2;
+                cubeIndexArray[3,0] = 7;
+                cubeIndexArray[3,1] = 3;
+                cubeIndexArray[3,2] = 2;
+                cubeIndexArray[3,3] = 6;
 
                 cubeIndexArray[4,0] = 1;
                 cubeIndexArray[4,1] = 2;
@@ -96,9 +96,9 @@ namespace panov_tomogram_visualizer
                 cubeIndexArray[4,3] = 5;
 
                 cubeIndexArray[5,0] = 0;
-                cubeIndexArray[5,1] = 4;
+                cubeIndexArray[5,1] = 3;
                 cubeIndexArray[5,2] = 7;
-                cubeIndexArray[5,3] = 3;
+                cubeIndexArray[5, 3] = 4;
             }     
         }
         public void GenerateFaceCube()
@@ -149,7 +149,7 @@ namespace panov_tomogram_visualizer
             {
                 for (int i = 0; i < size; ++i)
                 {
-                    int pixNum = dx + size + (size + dy) * Bin.X + (dz + z) * Bin.X * Bin.Y;
+                    int pixNum = dx + i + (size + dy) * Bin.X + (dz + z) * Bin.X * Bin.Y;
                     textureImage[4].SetPixel(z, i, TransferFunction(Bin.ar[pixNum]));
                 }
             }
@@ -158,7 +158,7 @@ namespace panov_tomogram_visualizer
             {
                 for (int i = 0; i < size; ++i)
                 {
-                    int pixNum = dx + size + (dy) * Bin.X + (dz + z) * Bin.X * Bin.Y;
+                    int pixNum = dx + i + (dy) * Bin.X + (dz + z) * Bin.X * Bin.Y;
                     textureImage[5].SetPixel(z, i, TransferFunction(Bin.ar[pixNum]));
                 }
             }
